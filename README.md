@@ -1,21 +1,89 @@
+## First of all please put a star 🥺 it took me hours of searching and trying to make this masterpiece
+
 # LegacySchematicsAPI
 Simple Schematics-API for legacy minecraft versions powered by WorldEdit 6.1 | Beginners-Friendly!
 
 Dependency -> ![image](https://github.com/user-attachments/assets/8eb67fc3-b3ef-49de-8744-58196d9f7e44)
 
-Add to pom.xml
+# Maven
 
+Add to pom.xml
+```xml
 	<repositories>
 		<repository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
 		</repository>
 	</repositories>
+```
 Step 2. Add the dependency
-
+```xml
 	<dependency>
 	    <groupId>com.github.m7wq</groupId>
 	    <artifactId>LegacySchematicsAPI</artifactId>
 	    <version>1.0</version>
 	</dependency>
+```
 
+# Gradle
+
+Add it in your root settings.gradle at the end of repositories:
+```gradle
+	dependencyResolutionManagement {
+		repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+		repositories {
+			mavenCentral()
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+Step 2. Add the dependency
+```gradle
+	dependencies {
+	        implementation 'com.github.m7wq:LegacySchematicsAPI:1.0'
+	}
+```
+
+# Examples
+```java
+public class MyPlugin extends JavaPlugin {
+
+
+
+
+    @Override
+    public void onEnable(){
+
+        // Initialize a variable for the SchematicsAPI
+        SchematicsAPI schematicsAPI = new SchematicsAPI();
+
+        // Step 2. Load the schematics api
+        schematicsAPI.load();
+        
+        // Schematic Manager and your world initialization
+        LegacySchematicsManager schematicsManager = schematicsAPI.getSchematicsManager();
+        World world = getServer().getWorld("myworld");
+
+        // Loading a schematic from a file
+        File file = new File(getDataFolder().getAbsolutePath()+"/schematics/blackhouse.schem");
+        Clipboard blackHouseClipboard = schematicsAPI.getSchematicsManager().load(file, world);
+       
+        // Copying a schematic already valid
+        Location pos1 = (Location) getConfig().get("pos1"),
+                pos2 = (Location) getConfig().get("pos2");
+        Clipboard mySchematic = schematicsManager.copy(pos1,pos2,world);
+        
+        // Save your copied schematic or loaded one into a file
+        File dir = new File(getDataFolder().getAbsolutePath()+"/scematics");
+        schematicsManager.save(blackHouseClipboard,dir,world); // loaded schematic
+        schematicsManager.save(mySchematic,dir,world); // copied schematic
+        
+        // Paste your schematics to transform into physical minecraft buildings
+        Location placeLocation = new Location(world,0,0,0);
+        schematicsManager.paste(blackHouseClipboard,placeLocation,world); // loaded schematic
+        schematicsManager.paste(mySchematic,placeLocation,world); // copied schematic
+
+
+    }
+}
+```
