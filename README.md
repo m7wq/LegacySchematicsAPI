@@ -1,5 +1,57 @@
 ## First of all please put a star 🥺 it took me hours of searching and trying to make this masterpiece
 
+# IMPORTANT: Use the jar file on lib as dependency 
+Tutorial:
+---
+
+## ✅ Step 1: Project Structure
+
+```
+my-plugin/
+├── libs/
+│   └── worldedit-bukkit-6.1.jar
+├── pom.xml or build.gradle
+```
+
+Commit the `.jar` to the `libs/` folder in your repo.
+
+---
+
+## 🔷 Maven Setup
+
+```xml
+<repositories>
+  <repository>
+    <id>local-libs</id>
+    <url>file://${project.basedir}/libs</url>
+  </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+    <groupId>com.sk89q.worldedit</groupId>
+    <artifactId>worldedit-bukkit</artifactId>
+    <version>6.1</version>
+  </dependency>
+</dependencies>
+```
+
+---
+
+## 🟡 Gradle Setup
+
+```groovy
+repositories {
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    implementation name: 'worldedit-bukkit-6.1'
+}
+```
+
+
+
 # LegacySchematicsAPI
 Simple Schematics-API for legacy minecraft versions powered by WorldEdit 6.1 | Beginners-Friendly!
 
