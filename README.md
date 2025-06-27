@@ -1,7 +1,7 @@
 ## First of all please put a star 🥺 it took me hours of searching and trying to make this masterpiece
 
-# IMPORTANT: Use the jar file on lib as dependency 
-Tutorial:
+# IMPORTANT: Use the jar file on lib as dependency and plugin;
+Tutorial To use it as a dependency:
 ---
 
 ## ✅ Step 1: Project Structure
