@@ -55,7 +55,7 @@ dependencies {
 # LegacySchematicsAPI
 Simple Schematics-API for legacy minecraft versions powered by WorldEdit 6.1 | Beginners-Friendly!
 
-Dependency -> ![image](https://github.com/user-attachments/assets/8eb67fc3-b3ef-49de-8744-58196d9f7e44)
+[![](https://jitpack.io/v/m7wq/LegacySchematicsAPI.svg)](https://jitpack.io/#m7wq/LegacySchematicsAPI)
 
 # Maven
 
@@ -73,7 +73,7 @@ Step 2. Add the dependency
 	<dependency>
 	    <groupId>com.github.m7wq</groupId>
 	    <artifactId>LegacySchematicsAPI</artifactId>
-	    <version>1.0</version>
+	    <version>1.0-PATCHED</version>
 	</dependency>
 ```
 
@@ -92,7 +92,7 @@ Add it in your root settings.gradle at the end of repositories:
 Step 2. Add the dependency
 ```gradle
 	dependencies {
-	        implementation 'com.github.m7wq:LegacySchematicsAPI:1.0'
+	        implementation 'com.github.m7wq:LegacySchematicsAPI:1.0-PATCHED'
 	}
 ```
 
