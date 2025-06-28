@@ -117,7 +117,7 @@ public class MyPlugin extends JavaPlugin {
         World world = getServer().getWorld("myworld");
 
         // Loading a schematic from a file
-        File file = new File(getDataFolder().getAbsolutePath()+"/schematics/blackhouse.schem");
+        File file = new File(getDataFolder().getAbsolutePath()+"/schematics/blackhouse.schematic");
         Clipboard blackHouseClipboard = schematicsAPI.getSchematicsManager().load(file, world);
        
         // Copying a schematic already valid
