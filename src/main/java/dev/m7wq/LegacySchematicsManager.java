@@ -25,16 +25,13 @@ public class LegacySchematicsManager {
         ClipboardFormat format = ClipboardFormat.findByFile(file);
 
 
-        FileInputStream inputStream;
+
+
+
 
         try {
-            inputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            throw new IllegalStateException("File isnt found SchematicsManager#load");
 
-        }
-
-        try {
+            FileInputStream inputStream = new FileInputStream(file);;
             ClipboardReader reader = format.getReader(inputStream);
 
             com.sk89q.worldedit.world.World weWorld = BukkitUtil.getLocalWorld(world);
