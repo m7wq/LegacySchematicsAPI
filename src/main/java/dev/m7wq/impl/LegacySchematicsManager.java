@@ -29,7 +29,9 @@ public class LegacySchematicsManager implements SchematicManager {
 
             fis.close();
             return clipboard;
-        }catch (IOException | DataException e){
+        }catch (IOException e){
+            e.printStackTrace();
+        }catch (DataException e){
             e.printStackTrace();
         }
 
