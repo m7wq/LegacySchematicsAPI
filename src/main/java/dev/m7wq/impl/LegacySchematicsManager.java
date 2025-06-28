@@ -78,12 +78,10 @@ public class LegacySchematicsManager implements SchematicManager {
             EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(weWorld,-1);
 
             clipboard.copy(session);
-
+            return clipboard;
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
 
         return null;
     }
