@@ -79,14 +79,6 @@ public class LegacySchematicsManager implements SchematicManager {
 
             clipboard.copy(session);
 
-
-
-
-
-
-
-
-
         }catch (Exception e){
             e.printStackTrace();
         }
