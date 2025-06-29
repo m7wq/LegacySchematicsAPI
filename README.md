@@ -126,7 +126,8 @@ public class MyPlugin extends JavaPlugin {
         Clipboard mySchematic = schematicsManager.copy(pos1,pos2,world);
         
         // Save your copied schematic or loaded one into a file
-        File dir = new File(getDataFolder().getAbsolutePath()+"/scematics");
+        File blackHouseDir = new File(getDataFolder().getAbsolutePath()+"/scematics_to_save/schem1.schematic");
+	File schemDir = new File(getDataFolder().getAbsolutePath()+"/scematics_to_save/schem2.schematic");
         schematicsManager.save(blackHouseClipboard,dir,world); // loaded schematic
         schematicsManager.save(mySchematic,dir,world); // copied schematic
         
