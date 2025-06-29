@@ -4,12 +4,13 @@ import com.sk89q.worldedit.CuboidClipboard;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import java.io.File;
 
 public interface SchematicManager {
 
-    CuboidClipboard load(File file, World bukkitWorld);
-    void paste(CuboidClipboard clipboard, Location pasteLocation, World bukkitWorld);
-    CuboidClipboard copy(Location min, Location max, World bukkitWorld);
-    void save(CuboidClipboard clipboard, File file, World bukkitWorld);
+    Clipboard load(File file, World bukkitWorld);
+    void paste(Clipboard clipboard, Location pasteLocation, World bukkitWorld);
+    Clipboard copy(Location min, Location max, World bukkitWorld);
+    void save(Clipboard clipboard, File file, World bukkitWorld);
 }

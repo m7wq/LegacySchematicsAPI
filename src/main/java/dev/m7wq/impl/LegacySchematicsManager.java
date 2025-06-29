@@ -1,102 +1,158 @@
 package dev.m7wq.impl;
 
-import com.sk89q.worldedit.CuboidClipboard;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.world.DataException;
-import dev.m7wq.models.SchematicManager;
-import org.bukkit.Location;
-import org.bukkit.World;
+import com.sk89q.worldedit.regions.Region;
 
+import com.sk89q.worldedit.session.ClipboardHolder;
+
+import com.google.common.io.Closer;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
+
+
+import dev.m7wq.models.SchematicManager;
+import org.bukkit.Location;
+
 
 public class LegacySchematicsManager implements SchematicManager {
+
+
+    // Load a schematic of a file
     @Override
-    public CuboidClipboard load(File file, World bukkitWorld) {
+    public Clipboard load(File file, org.bukkit.World bukkitWorld) {
+
+        // try to get the format of a file and check if it is valid (.schematic)
+        ClipboardFormat format = ClipboardFormat.findByFile(file);
+        if (format == null)
+            throw new RuntimeException("The file should end with .schematic FOOL!");
+
+        // Reading the file as a clipboard
+        Closer closer = Closer.create();
 
         try {
 
-            FileInputStream fis = new FileInputStream(file);
 
-            CuboidClipboard clipboard = CuboidClipboard.loadSchematic(file);
+            FileInputStream fis = closer.register(new FileInputStream(file));
+            BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
+            ClipboardReader reader = format.getReader(bis);
 
-            fis.close();
-            return clipboard;
-        }catch (IOException e){
-            e.printStackTrace();
-        }catch (DataException e){
-            e.printStackTrace();
+
+            return reader.read(BukkitUtil.getLocalWorld(bukkitWorld).getWorldData());
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load schematic: " + e.getMessage(), e);
+        } finally {
+            try {
+                closer.close();
+            } catch (IOException ignored) {}
         }
-
-        return null;
     }
 
-    @Override
-    public void paste(CuboidClipboard clipboard, Location pasteLocation, World bukkitWorld) {
+    // paste a clipboard as a physically schematic on minecraft :)
+    public void paste(Clipboard clipboard, Location pasteLocation, org.bukkit.World bukkitWorld) {
+        // Defining the worldEditWorld for the worldData and the editSession
+        WorldEdit worldEdit = WorldEdit.getInstance();
+        com.sk89q.worldedit.world.World weWorld = BukkitUtil.getLocalWorld(bukkitWorld);
+        EditSession editSession = worldEdit.getEditSessionFactory().getEditSession(weWorld, -1);
+
+        // Transfer the pasteLocation into a vector
+        // So its ready for the preparing
+        Vector to = BukkitUtil.toVector(pasteLocation);
+
+        // Making the clipboard holder that can create a paste and make it into an operation
+        ClipboardHolder holder = new ClipboardHolder(clipboard, weWorld.getWorldData());
+
+        Operation operation = holder.createPaste(editSession, weWorld.getWorldData())
+                .to(to)
+                .ignoreAirBlocks(false)
+                .build();
 
         try {
-            com.sk89q.worldedit.world.World weWorld = BukkitUtil.getLocalWorld(bukkitWorld);
-            EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(weWorld,-1);
-            Vector vector = BukkitUtil.toVector(pasteLocation);
-            clipboard.paste(session,vector,false);
-
-
-        }catch (Exception e){
-            e.printStackTrace();
+            // Complete the paste operation
+            Operations.completeLegacy(operation);
+        } catch (WorldEditException e) {
+            throw new RuntimeException("Failed to paste schematic: " + e.getMessage(), e);
         }
-
-
     }
 
-    @Override
-    public CuboidClipboard copy(Location min, Location max, World bukkitWorld) {
+    public Clipboard copy(Location min, Location max, org.bukkit.World bukkitWorld) {
 
-        try{
+        // Defining the region by the positions and the worldedit world
+        com.sk89q.worldedit.world.World weWorld = BukkitUtil.getLocalWorld(bukkitWorld);
+        Vector minVec = BukkitUtil.toVector(min);
+        Vector maxVec = BukkitUtil.toVector(max);
+        Region region = new CuboidRegion(weWorld, minVec, maxVec);
 
-            com.sk89q.worldedit.world.World weWorld = BukkitUtil.getLocalWorld(bukkitWorld);
 
-            Vector minV = BukkitUtil.toVector(min),
-                    maxV = BukkitUtil.toVector(max);
+        // Create the clipboard and the edit session as a preparing for the creating the operation
+        BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(weWorld, -1);
 
-            CuboidRegion region = new CuboidRegion(minV,maxV);
+        // Creating the operation (ForwardExtentCopy)
+        ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
 
-            Vector size = new Vector(
-                    region.getMaximumPoint().getBlockX()-region.getMinimumPoint().getBlockX()+1,
-                    region.getMaximumPoint().getBlockY()-region.getMinimumPoint().getBlockY()+1,
-                    region.getMaximumPoint().getBlockZ()-region.getMinimumPoint().getBlockZ()+1
-            );
-
-            CuboidClipboard clipboard = new CuboidClipboard(size, region.getMinimumPoint());
-
-            EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(weWorld,-1);
-
-            clipboard.copy(session);
-            return clipboard;
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    @Override
-    public void save(CuboidClipboard clipboard, File file, org.bukkit.World bukkitWorld) {
         try {
+
+
+            // Completing the copy operation
+            Operations.completeLegacy(copy);
+        } catch (WorldEditException e) {
+
+            throw new RuntimeException("Failed to copy region: " + e.getMessage(), e);
+        }
+        // setting the origin and return the clipboard
+        clipboard.setOrigin(minVec);
+        return clipboard;
+    }
+
+    public void save(Clipboard clipboard, File file, org.bukkit.World bukkitWorld) {
+
+
+        if (!file.getName().endsWith(".schematic"))
+            throw new IllegalStateException("Theres no .schematic on the last of the file name... Get Lost man");
+
+
+        ClipboardFormat format = ClipboardFormat.SCHEMATIC;
+
+
+        // Writing the schematic data into the file
+        Closer closer = Closer.create();
+        try {
+
+
+            // Checkers if the file is found
             File parent = file.getParentFile();
-            if (parent != null && !parent.exists()) parent.mkdirs();
+            if (parent != null && !parent.exists() && !parent.mkdirs())
+                throw new IOException("Couldnt create directories for file");
 
-            clipboard.saveSchematic(file);
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to save schematic", e);
+            FileOutputStream fos = closer.register(new FileOutputStream(file));
+
+            BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
+            ClipboardWriter writer = closer.register(format.getWriter(bos));
+
+            writer.write(clipboard, BukkitUtil.getLocalWorld(bukkitWorld).getWorldData());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save schematic: " + e.getMessage(), e);
+        } finally {
+            try {
+                closer.close();
+            } catch (IOException ignored) {}
         }
     }
-
 }
