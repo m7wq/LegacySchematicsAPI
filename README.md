@@ -128,8 +128,8 @@ public class MyPlugin extends JavaPlugin {
         // Save your copied schematic or loaded one into a file
         File blackHouseDir = new File(getDataFolder().getAbsolutePath()+"/scematics_to_save/schem1.schematic");
 	File schemDir = new File(getDataFolder().getAbsolutePath()+"/scematics_to_save/schem2.schematic");
-        schematicsManager.save(blackHouseClipboard,dir,world); // loaded schematic
-        schematicsManager.save(mySchematic,dir,world); // copied schematic
+        schematicsManager.save(blackHouseClipboard,blackHouseDir,world); // loaded schematic
+        schematicsManager.save(mySchematic,schemDir,world); // copied schematic
         
         // Paste your schematics to transform into physical minecraft buildings
         Location placeLocation = new Location(world,0,0,0);
