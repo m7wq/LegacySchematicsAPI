@@ -73,7 +73,7 @@ Step 2. Add the dependency
 	<dependency>
 	    <groupId>com.github.m7wq</groupId>
 	    <artifactId>LegacySchematicsAPI</artifactId>
-	    <version>1.0-PATCHED</version>
+	    <version>1.0-REWORKED</version>
 	</dependency>
 ```
 
@@ -92,7 +92,7 @@ Add it in your root settings.gradle at the end of repositories:
 Step 2. Add the dependency
 ```gradle
 	dependencies {
-	        implementation 'com.github.m7wq:LegacySchematicsAPI:1.0-PATCHED'
+	        implementation 'com.github.m7wq:LegacySchematicsAPI:1.0-REWORKED'
 	}
 ```
 
